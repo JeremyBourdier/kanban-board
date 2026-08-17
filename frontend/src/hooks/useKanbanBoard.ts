@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { KanbanBoardState, KanbanCardItem } from '../types/kanban';
 import { initialBoardData } from '../data/initialData';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData) {
   const [board, setBoard] = useState<KanbanBoardState>(initialData);
@@ -20,11 +21,11 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
     } finally {
       setTimeout(() => {
         isSyncingRef.current = false;
-      }, 500);
+      }, 600);
     }
   }, []);
 
-  // Poll for external changes (e.g. from AI Agent CLI or direct kanban.json edits)
+  // Fetch initial board state
   useEffect(() => {
     let isMounted = true;
 
@@ -36,7 +37,6 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
           const data = await res.json();
           if (data && Array.isArray(data.columns) && data.columns.length > 0) {
             setBoard((current) => {
-              // Only update if serialized content is actually different to avoid UI re-render flickers
               if (JSON.stringify(current) !== JSON.stringify(data)) {
                 return data;
               }
@@ -45,17 +45,48 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
           }
         }
       } catch (err) {
-        // silent fallback to current state in offline/test environments
+        // silent fallback to current state
       }
     };
 
     fetchLatestBoard();
-    const interval = setInterval(fetchLatestBoard, 1500);
 
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
+    // Setup Supabase Realtime subscription if configured
+    if (isSupabaseConfigured && supabase) {
+      const channel = supabase
+        .channel('kanban_realtime_board')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'kanban_board' },
+          (payload) => {
+            if (isSyncingRef.current) return;
+            const newData = (payload.new as { data?: KanbanBoardState })?.data;
+            if (newData && Array.isArray(newData.columns) && newData.columns.length > 0) {
+              setBoard((current) => {
+                if (JSON.stringify(current) !== JSON.stringify(newData)) {
+                  return newData;
+                }
+                return current;
+              });
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        isMounted = false;
+        if (supabase) {
+          supabase.removeChannel(channel);
+        }
+      };
+    } else {
+      // Fallback to lightweight polling when Supabase is offline / local
+      const interval = setInterval(fetchLatestBoard, 1500);
+      return () => {
+        isMounted = false;
+        clearInterval(interval);
+      };
+    }
   }, []);
 
   const addCard = useCallback((columnId: string, title: string, details: string) => {

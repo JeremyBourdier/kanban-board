@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { KanbanBoardState } from '@/types/kanban';
 import { initialBoardData } from '@/data/initialData';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ function getFilePath(): string {
     : localPath;
 }
 
-function readBoardData(): KanbanBoardState {
+function readLocalBoardData(): KanbanBoardState {
   try {
     const filePath = getFilePath();
     if (fs.existsSync(/* turbopackIgnore: true */ filePath)) {
@@ -33,12 +34,12 @@ function readBoardData(): KanbanBoardState {
       }
     }
   } catch (error) {
-    console.error('Error reading kanban.json:', error);
+    console.error('Error reading local kanban.json:', error);
   }
   return initialBoardData;
 }
 
-function writeBoardData(data: KanbanBoardState): boolean {
+function writeLocalBoardData(data: KanbanBoardState): boolean {
   try {
     const filePath = getFilePath();
     fs.writeFileSync(/* turbopackIgnore: true */ filePath, JSON.stringify(data, null, 2), 'utf-8');
@@ -49,18 +50,44 @@ function writeBoardData(data: KanbanBoardState): boolean {
       fs.writeFileSync(/* turbopackIgnore: true */ tmpPath, JSON.stringify(data, null, 2), 'utf-8');
       return true;
     } catch (e) {
-      console.error('Error writing kanban.json:', e);
+      console.error('Error writing local kanban.json:', e);
       return false;
     }
   }
 }
 
 export async function GET() {
-  const board = readBoardData();
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('kanban_board')
+        .select('data')
+        .eq('id', 'default')
+        .single();
+
+      if (!error && data?.data?.columns?.length) {
+        return NextResponse.json(data.data, {
+          headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+        });
+      }
+
+      // If record does not exist yet, seed it with local data
+      const defaultState = readLocalBoardData();
+      await supabase
+        .from('kanban_board')
+        .upsert({ id: 'default', data: defaultState, updated_at: new Date().toISOString() });
+
+      return NextResponse.json(defaultState, {
+        headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+      });
+    } catch (err) {
+      console.error('Supabase query failed, falling back to local storage:', err);
+    }
+  }
+
+  const board = readLocalBoardData();
   return NextResponse.json(board, {
-    headers: {
-      'Cache-Control': 'no-store, no-cache, must-revalidate',
-    },
+    headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
   });
 }
 
@@ -72,10 +99,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid board structure' }, { status: 400 });
     }
 
-    const success = writeBoardData(body);
-    if (!success) {
-      return NextResponse.json({ error: 'Failed to write to kanban.json' }, { status: 500 });
+    // Save to Supabase if configured
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase
+          .from('kanban_board')
+          .upsert({ id: 'default', data: body, updated_at: new Date().toISOString() });
+      } catch (err) {
+        console.error('Supabase update failed:', err);
+      }
     }
+
+    // Save to local file backup
+    writeLocalBoardData(body);
 
     return NextResponse.json({ success: true, board: body });
   } catch (error) {
