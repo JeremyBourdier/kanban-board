@@ -47,6 +47,11 @@
           "id": "card-1786949728923-gm16e",
           "title": "Movile first",
           "details": "Refactoriza y prueba el diseño para que funcione muy bien en teléfonos móviles, ya que hay varios problemas de diseño en el móvil y es un poco difícil de usar en el teléfono móvil. Aplica los cambios que consideres necesarios para que sea agradable de usar en el móvil, tanto como en una computadora."
+        },
+        {
+          "id": "card-1786950133556-461z5",
+          "title": "Corrección de diseño",
+          "details": "El menú superior que detalla cuántas tareas hay en cada apartado por ejemplo en Block Ready, en progreso, en revisión, etc. está cortado no se ve completo. Revisa eso y corrígelo asegúrate de qué entre ese menú y el apartado de tarjetas haya un espacio para que una no se sobreponga a la otra."
         }
       ],
       "title": "Done"
