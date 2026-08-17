@@ -3,6 +3,9 @@
 const fs = require('fs');
 const path = require('path');
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rchvwzvrnnulmfzwmozc.supabase.co';
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjaHZ3enZybm51bG1mendtb3pjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5MzIzMTUsImV4cCI6MjEwMjUwODMxNX0.NUce9JRTsM_uj_FjRDIHSrPlIeWNbP-jxwAhu_U85lQ';
+
 function getFilePath() {
   const rootPath = path.resolve(__dirname, '../kanban.json');
   const localPath = path.resolve(process.cwd(), 'kanban.json');
@@ -11,7 +14,49 @@ function getFilePath() {
   return rootPath;
 }
 
-function loadBoard() {
+async function fetchFromSupabase() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kanban_board?id=eq.default&select=data`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (res.ok) {
+      const rows = await res.json();
+      if (rows && rows.length > 0 && rows[0].data?.columns) {
+        return rows[0].data;
+      }
+    }
+  } catch (e) {}
+  return null;
+}
+
+async function syncToSupabase(board) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/kanban_board`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        id: 'default',
+        data: board,
+        updated_at: new Date().toISOString()
+      })
+    });
+  } catch (e) {}
+}
+
+async function loadBoard() {
+  const cloudBoard = await fetchFromSupabase();
+  if (cloudBoard) {
+    saveLocalBoard(cloudBoard);
+    return cloudBoard;
+  }
   const filePath = getFilePath();
   if (fs.existsSync(filePath)) {
     try {
@@ -24,9 +69,14 @@ function loadBoard() {
   return { columns: [] };
 }
 
-function saveBoard(board) {
+function saveLocalBoard(board) {
   const filePath = getFilePath();
   fs.writeFileSync(filePath, JSON.stringify(board, null, 2), 'utf-8');
+}
+
+async function saveBoard(board) {
+  saveLocalBoard(board);
+  await syncToSupabase(board);
 }
 
 function parseArgs(args) {
@@ -63,9 +113,9 @@ function findCard(board, cardId) {
   return null;
 }
 
-function main() {
+async function main() {
   const { command, flags } = parseArgs(process.argv.slice(2));
-  const board = loadBoard();
+  const board = await loadBoard();
 
   switch (command) {
     case 'list': {
@@ -121,7 +171,7 @@ function main() {
       };
 
       col.cards.push(newCard);
-      saveBoard(board);
+      await saveBoard(board);
       console.log(`Card created successfully: [${newCard.id}] "${newCard.title}" in column "${col.title}".`);
       break;
     }
@@ -153,7 +203,7 @@ function main() {
       const destIndex = flags.index !== undefined ? parseInt(flags.index, 10) : destCol.cards.length;
       destCol.cards.splice(destIndex, 0, match.card);
 
-      saveBoard(board);
+      await saveBoard(board);
       console.log(`Moved card [${cardId}] "${match.card.title}" from "${match.column.title}" to "${destCol.title}".`);
       break;
     }
@@ -172,7 +222,7 @@ function main() {
       }
 
       match.column.cards = match.column.cards.filter((c) => c.id !== cardId);
-      saveBoard(board);
+      await saveBoard(board);
       console.log(`Deleted card [${cardId}] "${match.card.title}" from column "${match.column.title}".`);
       break;
     }
@@ -193,7 +243,7 @@ function main() {
 
       const oldTitle = col.title;
       col.title = String(newTitle).trim();
-      saveBoard(board);
+      await saveBoard(board);
       console.log(`Renamed column [${col.id}] from "${oldTitle}" to "${col.title}".`);
       break;
     }
