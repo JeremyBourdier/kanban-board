@@ -1,18 +1,26 @@
 import { test, expect } from '@playwright/test';
-import fs from 'fs';
-import path from 'path';
 import { initialBoardData } from '../src/data/initialData';
-
-function resetBoardFile() {
-  const rootPath = path.resolve(process.cwd(), '../kanban.json');
-  const localPath = path.resolve(process.cwd(), 'kanban.json');
-  const target = fs.existsSync(rootPath) ? rootPath : localPath;
-  fs.writeFileSync(target, JSON.stringify(initialBoardData, null, 2), 'utf-8');
-}
 
 test.describe('Kanban Unit & Data Contract Tests', () => {
   test.beforeEach(async ({ page }) => {
-    resetBoardFile();
+    let boardState = JSON.parse(JSON.stringify(initialBoardData));
+    await page.route('**/api/board', async (route) => {
+      if (route.request().method() === 'GET') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(boardState),
+        });
+      } else if (route.request().method() === 'POST') {
+        boardState = route.request().postDataJSON();
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, board: boardState }),
+        });
+      }
+      return route.continue();
+    });
     await page.goto('/');
   });
 

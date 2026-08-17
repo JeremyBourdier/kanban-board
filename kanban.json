@@ -2,34 +2,34 @@
   "columns": [
     {
       "id": "col-1",
-      "title": "Backlog",
+      "cards": [],
+      "title": "Backlog"
+    },
+    {
+      "id": "col-2",
+      "cards": [],
+      "title": "Ready"
+    },
+    {
+      "id": "col-3",
+      "cards": [],
+      "title": "In Progress"
+    },
+    {
+      "id": "col-4",
+      "cards": [],
+      "title": "In Review"
+    },
+    {
+      "id": "col-5",
       "cards": [
         {
           "id": "card-login-oauth",
           "title": "Implementar Login con Google y GitHub",
           "details": "Agregar autenticación de usuarios mediante OAuth en Supabase para permitir iniciar sesión con cuentas de Google y GitHub."
         }
-      ]
-    },
-    {
-      "id": "col-2",
-      "title": "Ready",
-      "cards": []
-    },
-    {
-      "id": "col-3",
-      "title": "In Progress",
-      "cards": []
-    },
-    {
-      "id": "col-4",
-      "title": "In Review",
-      "cards": []
-    },
-    {
-      "id": "col-5",
-      "title": "Done",
-      "cards": []
+      ],
+      "title": "Done"
     }
   ]
 }

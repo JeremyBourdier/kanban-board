@@ -3,6 +3,7 @@
 import React from 'react';
 import { Kanban, Layers, CheckCircle2, Sun, Moon } from 'lucide-react';
 import { Theme } from '../hooks/useTheme';
+import { UserProfile } from './UserProfile';
 import styles from './Header.module.css';
 
 interface HeaderProps {
@@ -52,6 +53,8 @@ export const Header: React.FC<HeaderProps> = ({
         >
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
+
+        <UserProfile />
       </div>
     </header>
   );
