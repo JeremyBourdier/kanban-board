@@ -1,0 +1,99 @@
+.header {
+  background-color: var(--bg-header);
+  border-bottom: 2px solid var(--accent-yellow);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.logoIcon {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, var(--blue-primary) 0%, var(--purple-secondary) 100%);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(32, 157, 215, 0.25);
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--dark-navy);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: var(--gray-text);
+  font-weight: 500;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.statBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: var(--blue-primary-light);
+  color: var(--blue-primary);
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  border: 1px solid rgba(32, 157, 215, 0.2);
+}
+
+.accentTag {
+  background-color: var(--accent-yellow-light);
+  color: var(--accent-yellow);
+  border-color: rgba(236, 173, 10, 0.3);
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem;
+  border-radius: var(--radius-md);
+  color: var(--dark-navy);
+  background-color: var(--gray-light);
+  border: 1px solid var(--gray-border);
+  transition: all var(--transition-fast);
+}
+
+.themeToggle:hover {
+  background-color: var(--blue-primary-light);
+  color: var(--blue-primary);
+  border-color: rgba(32, 157, 215, 0.3);
+}

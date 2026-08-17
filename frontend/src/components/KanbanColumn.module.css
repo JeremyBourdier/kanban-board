@@ -1,0 +1,148 @@
+.column {
+  background-color: var(--bg-column);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-border);
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  max-width: 320px;
+  flex: 1 1 0;
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.column:hover {
+  background-color: var(--bg-column-hover);
+}
+
+.columnHeader {
+  padding: 1rem 1.1rem 0.85rem 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.titleArea {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+  max-width: calc(100% - 40px);
+}
+
+.titleWrapper:hover {
+  background-color: var(--gray-light);
+}
+
+.columnTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.editIcon {
+  color: var(--gray-text);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.titleWrapper:hover .editIcon {
+  opacity: 1;
+}
+
+.titleInput {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark-navy);
+  background-color: var(--bg-card);
+  border: 1.5px solid var(--blue-primary);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.5rem;
+  width: 100%;
+  box-shadow: 0 0 0 2px var(--blue-primary-light);
+  outline: none;
+}
+
+.countBadge {
+  background-color: var(--bg-card);
+  color: var(--dark-navy-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid var(--gray-border);
+  flex-shrink: 0;
+}
+
+.cardsContainer {
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  min-height: 120px;
+  transition: background-color var(--transition-fast);
+}
+
+.cardsContainerDraggingOver {
+  background-color: var(--blue-primary-light);
+  border-radius: var(--radius-md);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  border: 1.5px dashed var(--gray-border);
+  border-radius: var(--radius-md);
+  color: var(--gray-text);
+  font-size: 0.825rem;
+  text-align: center;
+  background-color: var(--gray-light);
+}
+
+.footer {
+  padding: 0.75rem 0.85rem;
+  border-top: 1px solid var(--gray-border);
+}
+
+.addCardButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--dark-navy-muted);
+  background-color: var(--bg-card);
+  border: 1px solid var(--gray-border);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.addCardButton:hover {
+  background-color: var(--purple-secondary-light);
+  color: var(--purple-secondary);
+  border-color: rgba(117, 57, 145, 0.3);
+}

@@ -1,25 +1,48 @@
-# Kanban Project Manager
+# Kanban Project
 
-## Instructions
+A modern, single-board Kanban project management web application built with Next.js and TypeScript.
 
-This is a skeleton project to be the basis for your Kanban project for Week 1 of the Complete AI Coder Course. See the course resources for more.
+## Features
 
-You should clone this repo within your projects directory with:
+- Single board with 5 fixed columns (Backlog, Ready, In Progress, In Review, Done)
+- In-place column renaming
+- Card creation with title and details
+- Card deletion
+- Drag and drop cards within and across columns
+- Dark and light mode themes with persistence
+- Pre-populated dummy data for instant preview
 
-`git clone https://github.com/ed-donner/kanban.git`
+## Getting Started
 
-And then refine the AGENTS.md before using in your Coding Agent of choice.
+### Prerequisites
 
-If you don't have git installed, you can [install it here](https://git-scm.com/install/) and you might need to reboot afterwards.
+- Node.js 18+
+- npm
 
-## Contributing your AGENTS.md
+### Installation and Running Locally
 
-If you have suggested AGENTS.md changes that have worked well for you, please contribute them to benefit other students! Follow the instructions linked [here](https://edwarddonner.com/pr) to raise a PR to put it in community_contributions. Name your file something like ED_DONNER_AGENTS.md but with your name..
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-I can't wait to see your changes.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Posting your app
+## Testing with Playwright (Chromium)
 
-When you've successfully built a Kanban app, if you'd like to post about it on LinkedIn and tag me, then I'll weigh in to amplify your success and draw more attention to your achievements.
+All testing (unit tests, boundary/limit tests, and end-to-end user flows) is unified under Playwright using Chromium:
 
-If you see other students doing this, please weigh in yourself to add your support and encouragement. It's so helpful for the community if we support each other.
+```bash
+# Run all tests (unit, limit, e2e)
+npm run test
+
+# Run tests in headed browser mode (visible UI)
+npm run test:headed
+
+# Open interactive Playwright UI dashboard
+npm run test:ui
+
+# View HTML test report
+npm run test:report
+```
