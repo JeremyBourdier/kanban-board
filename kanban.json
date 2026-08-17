@@ -32,6 +32,11 @@
           "id": "card-1786948006123-2rb7",
           "title": "Autenticacion Obligatoria y Rediseño de Login con GitHub",
           "details": "Proteger acceso al tablero exclusivo para usuarios autenticados, eliminar Google dejando solo GitHub, y corregir opacidades y contrastes en modo claro y oscuro."
+        },
+        {
+          "id": "card-1786948904197-hs0h",
+          "title": "Control de Acceso y Lista Blanca de Propietario",
+          "details": "Restringir acceso al tablero exclusivamente al propietario autorizado (JeremyBourdier), mostrando pantalla de Acceso Denegado a otros usuarios de GitHub."
         }
       ],
       "title": "Done"

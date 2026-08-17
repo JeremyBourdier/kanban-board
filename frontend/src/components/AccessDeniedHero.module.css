@@ -1,0 +1,153 @@
+.deniedWrapper {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: var(--bg-page);
+}
+
+.deniedCard {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-modal);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: cardFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background-color: var(--danger-light);
+  border: 1px solid var(--danger-color);
+  color: var(--danger-color);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.iconWrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--danger-light);
+  border: 1px solid var(--danger-color);
+  color: var(--danger-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--dark-navy);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--gray-text);
+  line-height: 1.5;
+  margin-bottom: 1.75rem;
+  max-width: 380px;
+}
+
+.accountBox {
+  width: 100%;
+  background-color: var(--gray-light);
+  border: 1px solid var(--gray-border);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--gray-border);
+}
+
+.accountInfo {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.accountName {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--dark-navy);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.accountEmail {
+  font-size: 0.8rem;
+  color: var(--gray-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logoutButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background-color: var(--purple-secondary);
+  color: #ffffff !important;
+  border: 1px solid var(--purple-secondary-hover);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(117, 57, 145, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.logoutButton:hover {
+  background-color: var(--purple-secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(117, 57, 145, 0.3);
+}
+
+.footerNote {
+  margin-top: 1.25rem;
+  font-size: 0.78rem;
+  color: var(--gray-text);
+}

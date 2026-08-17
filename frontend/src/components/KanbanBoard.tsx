@@ -10,11 +10,12 @@ import { Header } from './Header';
 import { KanbanColumn } from './KanbanColumn';
 import { AddCardModal } from './AddCardModal';
 import { LoginHero } from './LoginHero';
+import { AccessDeniedHero } from './AccessDeniedHero';
 import styles from './KanbanBoard.module.css';
 
 export const KanbanBoard: React.FC = () => {
   const isMounted = useIsMounted();
-  const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const { user, loading: authLoading, isAuthenticated, isAuthorized } = useAuth();
   const { board, addCard, deleteCard, renameColumn, moveCard } = useKanbanBoard();
   const { theme, toggleTheme } = useTheme();
 
@@ -77,7 +78,7 @@ export const KanbanBoard: React.FC = () => {
     <div className={styles.boardLayout}>
       <Header
         columnCount={board.columns.length}
-        totalCards={isAuthenticated ? totalCards : 0}
+        totalCards={isAuthenticated && isAuthorized ? totalCards : 0}
         theme={theme}
         onToggleTheme={toggleTheme}
       />
@@ -85,6 +86,8 @@ export const KanbanBoard: React.FC = () => {
       <main className={styles.mainContent}>
         {!isAuthenticated ? (
           <LoginHero />
+        ) : !isAuthorized ? (
+          <AccessDeniedHero />
         ) : (
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className={styles.boardContainer} data-testid="kanban-board-container">
@@ -102,7 +105,7 @@ export const KanbanBoard: React.FC = () => {
         )}
       </main>
 
-      {isAuthenticated && (
+      {isAuthenticated && isAuthorized && (
         <AddCardModal
           isOpen={!!activeModalCol}
           columnId={activeModalCol?.id || ''}

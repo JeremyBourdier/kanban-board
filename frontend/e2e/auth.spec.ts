@@ -1,12 +1,11 @@
 import { test, expect } from '@playwright/test';
+import { mockAuthenticatedUser } from './test-helpers';
 
-test.describe('Protected Board & GitHub OAuth Authentication', () => {
-  test.beforeEach(async ({ page }) => {
+test.describe('Protected Board, Authorization & GitHub OAuth Suite', () => {
+  test('shows login hero and protects board when user is not authenticated', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
-  });
 
-  test('shows login hero and protects board when user is not authenticated', async ({ page }) => {
     // Board columns should not be visible
     await expect(page.locator('[data-testid="kanban-board-container"]')).not.toBeVisible();
 
@@ -23,7 +22,52 @@ test.describe('Protected Board & GitHub OAuth Authentication', () => {
     await expect(loginBtn).toContainText('Iniciar Sesión');
   });
 
+  test('blocks non-authorized GitHub users and displays AccessDeniedHero', async ({ page }) => {
+    // Simulate someone logging in with a non-whitelisted GitHub account
+    await mockAuthenticatedUser(page, {
+      name: 'Unauthorized Stranger',
+      email: 'stranger@randomcorp.com',
+      userName: 'randomstranger',
+    });
+
+    await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Board columns should NOT be visible
+    await expect(page.locator('[data-testid="kanban-board-container"]')).not.toBeVisible();
+
+    // Access Denied screen should be visible
+    const deniedHero = page.locator('[data-testid="access-denied-container"]');
+    await expect(deniedHero).toBeVisible();
+    await expect(deniedHero.locator('h2')).toContainText('Cuenta No Autorizada');
+    await expect(deniedHero.locator('#access-denied-logout-btn')).toBeVisible();
+  });
+
+  test('unlocks full board when authorized owner logs in', async ({ page }) => {
+    // Simulate authorized owner login
+    await mockAuthenticatedUser(page, {
+      name: 'Jeremy Bourdier',
+      email: 'bourdierestrellajeremy@gmail.com',
+      userName: 'JeremyBourdier',
+    });
+
+    await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Full board columns should be visible
+    await expect(page.locator('[data-testid="kanban-board-container"]')).toBeVisible();
+    await expect(page.locator('[data-testid="access-denied-container"]')).not.toBeVisible();
+    await expect(page.locator('[data-testid="login-hero-container"]')).not.toBeVisible();
+
+    // User profile in header shows owner name
+    await expect(page.locator('#user-menu-btn')).toBeVisible();
+    await expect(page.locator('#user-menu-btn')).toContainText('Jeremy Bourdier');
+  });
+
   test('opens AuthModal with only GitHub OAuth option (no Google)', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
+
     const loginBtn = page.locator('#open-login-btn');
     await loginBtn.click();
 
@@ -41,6 +85,9 @@ test.describe('Protected Board & GitHub OAuth Authentication', () => {
   });
 
   test('closes AuthModal via close button and Escape key', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForLoadState('domcontentloaded');
+
     const loginBtn = page.locator('#open-login-btn');
     await loginBtn.click();
 
