@@ -9,11 +9,17 @@ export const dynamic = 'force-dynamic';
 function getFilePath(): string {
   const rootPath = path.join(process.cwd(), '..', 'kanban.json');
   const localPath = path.join(process.cwd(), 'kanban.json');
+  const tmpPath = path.join('/tmp', 'kanban.json');
 
   if (fs.existsSync(/* turbopackIgnore: true */ rootPath)) return rootPath;
   if (fs.existsSync(/* turbopackIgnore: true */ localPath)) return localPath;
+  if (fs.existsSync(/* turbopackIgnore: true */ tmpPath)) return tmpPath;
 
-  return fs.existsSync(path.join(process.cwd(), 'src')) ? rootPath : localPath;
+  return process.env.VERCEL
+    ? tmpPath
+    : fs.existsSync(path.join(process.cwd(), 'src'))
+    ? rootPath
+    : localPath;
 }
 
 function readBoardData(): KanbanBoardState {
@@ -38,8 +44,14 @@ function writeBoardData(data: KanbanBoardState): boolean {
     fs.writeFileSync(/* turbopackIgnore: true */ filePath, JSON.stringify(data, null, 2), 'utf-8');
     return true;
   } catch (error) {
-    console.error('Error writing kanban.json:', error);
-    return false;
+    try {
+      const tmpPath = path.join('/tmp', 'kanban.json');
+      fs.writeFileSync(/* turbopackIgnore: true */ tmpPath, JSON.stringify(data, null, 2), 'utf-8');
+      return true;
+    } catch (e) {
+      console.error('Error writing kanban.json:', e);
+      return false;
+    }
   }
 }
 
