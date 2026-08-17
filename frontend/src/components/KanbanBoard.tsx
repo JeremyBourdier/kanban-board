@@ -11,6 +11,7 @@ import { Header } from './Header';
 import { KanbanColumn } from './KanbanColumn';
 import { AddCardModal } from './AddCardModal';
 import { EditCardModal } from './EditCardModal';
+import { ChatWidget } from './ChatWidget';
 import { LoginHero } from './LoginHero';
 import { AccessDeniedHero } from './AccessDeniedHero';
 import styles from './KanbanBoard.module.css';
@@ -35,8 +36,13 @@ export const KanbanBoard: React.FC = () => {
   } | null>(null);
   const [activeEditCard, setActiveEditCard] = useState<KanbanCardItem | null>(null);
   const [activeMobileColId, setActiveMobileColId] = useState<string>('col-1');
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const totalCards = board.columns.reduce((acc, col) => acc + col.cards.length, 0);
+
+  const toggleChat = () => {
+    setIsChatOpen((prev) => !prev);
+  };
 
   const scrollToColumn = (colId: string) => {
     setActiveMobileColId(colId);
@@ -111,6 +117,7 @@ export const KanbanBoard: React.FC = () => {
         totalCards={isAuthenticated && isAuthorized ? totalCards : 0}
         theme={theme}
         onToggleTheme={toggleTheme}
+        onToggleChat={isAuthenticated && isAuthorized ? toggleChat : undefined}
       />
 
       <main className={styles.mainContent}>
@@ -175,6 +182,11 @@ export const KanbanBoard: React.FC = () => {
             card={activeEditCard}
             onClose={handleCloseEditCardModal}
             onSubmit={updateCard}
+          />
+          <ChatWidget
+            boardContext={board}
+            isOpen={isChatOpen}
+            onToggle={toggleChat}
           />
         </>
       )}

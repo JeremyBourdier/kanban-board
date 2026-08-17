@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Kanban, Layers, CheckCircle2, Sun, Moon } from 'lucide-react';
+import { Kanban, Layers, CheckCircle2, Sun, Moon, MessageSquare } from 'lucide-react';
 import { Theme } from '../hooks/useTheme';
 import { UserProfile } from './UserProfile';
 import styles from './Header.module.css';
@@ -11,6 +11,7 @@ interface HeaderProps {
   totalCards: number;
   theme: Theme;
   onToggleTheme: () => void;
+  onToggleChat?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   totalCards,
   theme,
   onToggleTheme,
+  onToggleChat,
 }) => {
   return (
     <header className={styles.header} role="banner">
@@ -42,6 +44,19 @@ export const Header: React.FC<HeaderProps> = ({
             <span>{totalCards} Tasks</span>
           </div>
         </div>
+
+        {onToggleChat && (
+          <button
+            type="button"
+            className={styles.themeToggle}
+            onClick={onToggleChat}
+            title="Abrir Asistente de Chat"
+            aria-label="Abrir Asistente de Chat"
+            data-testid="header-chat-button"
+          >
+            <MessageSquare size={18} />
+          </button>
+        )}
 
         <button
           type="button"
