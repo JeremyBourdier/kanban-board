@@ -52,6 +52,11 @@
           "id": "card-1786950133556-461z5",
           "title": "Corrección de diseño",
           "details": "El menú superior que detalla cuántas tareas hay en cada apartado por ejemplo en Block Ready, en progreso, en revisión, etc. está cortado no se ve completo. Revisa eso y corrígelo asegúrate de qué entre ese menú y el apartado de tarjetas haya un espacio para que una no se sobreponga a la otra."
+        },
+        {
+          "id": "card-1786950448812-740ot",
+          "title": "Corrección del menú que detalla cuántas tarjetas hay en cada apartado y el Scroll en la versión web",
+          "details": "Con el último cambio realizado el menú que muestra cuántas tarjetas hay en cada apartado se ve un poco más pero todavía no se ve completo se ve cortado y me acabo de dar cuenta de que el Scroll en la versión vuelve decir en la computadora ni tampoco no funciona. Simplemente no hay forma de hacer ese correo por ejemplo en el apartado de tarjetas que están Don, es decir terminadas como ya son muchas simplemente no puedo ver el resto de la tarjetas porque no me deja ir hacia abajo, así que eso es un error de diseño terrible asegúrate por favor de revisar visualmente cómo se ve el programa tanto en el teléfono como en la computadora para evitar estar y tirando sin necesidad."
         }
       ],
       "title": "Done"
