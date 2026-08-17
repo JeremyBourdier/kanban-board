@@ -27,6 +27,11 @@
           "id": "card-login-oauth",
           "title": "Implementar Login con Google y GitHub",
           "details": "Agregar autenticación de usuarios mediante OAuth en Supabase para permitir iniciar sesión con cuentas de Google y GitHub."
+        },
+        {
+          "id": "card-1786948006123-2rb7",
+          "title": "Autenticacion Obligatoria y Rediseño de Login con GitHub",
+          "details": "Proteger acceso al tablero exclusivo para usuarios autenticados, eliminar Google dejando solo GitHub, y corregir opacidades y contrastes en modo claro y oscuro."
         }
       ],
       "title": "Done"

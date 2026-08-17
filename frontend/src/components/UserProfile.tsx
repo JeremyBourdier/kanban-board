@@ -6,7 +6,7 @@ import { AuthModal } from './AuthModal';
 import styles from './UserProfile.module.css';
 
 export function UserProfile() {
-  const { user, loading, isAuthenticated, signInWithOAuth, signOut } = useAuth();
+  const { user, loading, isAuthenticated, signInWithGitHub, signOut } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -24,7 +24,7 @@ export function UserProfile() {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div style={{ width: '80px', height: '32px', opacity: 0.5 }}></div>
+        <div style={{ width: '90px', height: '34px', opacity: 0.5 }}></div>
       </div>
     );
   }
@@ -32,6 +32,7 @@ export function UserProfile() {
   const userDisplayName =
     user?.user_metadata?.full_name ||
     user?.user_metadata?.name ||
+    user?.user_metadata?.user_name ||
     user?.email?.split('@')[0] ||
     'Usuario';
 
@@ -48,6 +49,7 @@ export function UserProfile() {
             className={styles.loginBtn}
             onClick={() => setIsModalOpen(true)}
             id="open-login-btn"
+            data-testid="open-login-btn"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
@@ -60,7 +62,7 @@ export function UserProfile() {
           <AuthModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
-            onSignIn={signInWithOAuth}
+            onSignIn={signInWithGitHub}
           />
         </>
       ) : (
@@ -71,6 +73,7 @@ export function UserProfile() {
             onClick={() => setIsDropdownOpen((prev) => !prev)}
             aria-expanded={isDropdownOpen}
             id="user-menu-btn"
+            data-testid="user-menu-btn"
           >
             {userAvatar ? (
               <img
@@ -99,10 +102,10 @@ export function UserProfile() {
           </button>
 
           {isDropdownOpen && (
-            <div className={styles.dropdown}>
+            <div className={styles.dropdown} data-testid="user-dropdown-menu">
               <div className={styles.dropdownHeader}>
                 <p className={styles.dropdownName}>{userDisplayName}</p>
-                <p className={styles.dropdownEmail}>{user?.email}</p>
+                {user?.email && <p className={styles.dropdownEmail}>{user.email}</p>}
               </div>
               <button
                 type="button"
@@ -112,6 +115,7 @@ export function UserProfile() {
                   await signOut();
                 }}
                 id="logout-btn"
+                data-testid="logout-btn"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

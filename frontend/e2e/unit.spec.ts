@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { initialBoardData } from '../src/data/initialData';
+import { mockAuthenticatedUser } from './test-helpers';
 
 test.describe('Kanban Unit & Data Contract Tests', () => {
   test.beforeEach(async ({ page }) => {
+    await mockAuthenticatedUser(page);
     let boardState = JSON.parse(JSON.stringify(initialBoardData));
     await page.route('**/api/board', async (route) => {
       if (route.request().method() === 'GET') {

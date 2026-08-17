@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(3, 33, 71, 0.6);
+  background-color: var(--bg-modal-overlay);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -22,10 +22,10 @@
 }
 
 .modal {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
+  background-color: var(--bg-card);
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-modal);
   width: 100%;
   max-width: 420px;
   overflow: hidden;
@@ -48,15 +48,15 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  background: linear-gradient(to right, rgba(32, 157, 215, 0.04), rgba(117, 57, 145, 0.04));
+  border-bottom: 1px solid var(--gray-border);
+  background-color: var(--bg-header);
 }
 
 .title {
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--dark-navy);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -65,7 +65,7 @@
 .closeButton {
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--gray-text);
   cursor: pointer;
   padding: 0.35rem;
   border-radius: var(--radius-sm);
@@ -76,12 +76,8 @@
 }
 
 .closeButton:hover {
-  color: var(--text-primary);
-  background-color: rgba(0, 0, 0, 0.06);
-}
-
-:global([data-theme='dark']) .closeButton:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--dark-navy);
+  background-color: var(--gray-light);
 }
 
 .body {
@@ -89,12 +85,13 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  background-color: var(--bg-card);
 }
 
 .description {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: var(--gray-text);
   line-height: 1.5;
   text-align: center;
 }
@@ -105,60 +102,64 @@
   gap: 0.75rem;
 }
 
-.oauthButton {
+.githubButton {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   width: 100%;
-  padding: 0.85rem 1rem;
+  padding: 0.9rem 1.25rem;
   border-radius: var(--radius-md);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: 0.98rem;
+  font-weight: 700;
   cursor: pointer;
   transition: all var(--transition-fast);
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-}
-
-.oauthButton:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
-
-.googleButton:hover:not(:disabled) {
-  border-color: #4285F4;
-  background-color: rgba(66, 133, 244, 0.04);
+  background-color: #24292f;
+  color: #ffffff !important;
+  border: 1px solid #1b1f23;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .githubButton:hover:not(:disabled) {
-  border-color: var(--color-purple);
-  background-color: rgba(117, 57, 145, 0.04);
+  background-color: #1b1f23;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.oauthButton:disabled {
+:global([data-theme='dark']) .githubButton {
+  background: linear-gradient(135deg, #24292e, #1a1e22);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+:global([data-theme='dark']) .githubButton:hover:not(:disabled) {
+  border-color: var(--accent-yellow);
+  background: linear-gradient(135deg, #2c3238, #202428);
+}
+
+.githubButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 .errorMessage {
-  background-color: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #ef4444;
+  background-color: var(--danger-light);
+  border: 1px solid var(--danger-color);
+  color: var(--danger-color);
   padding: 0.75rem;
   border-radius: var(--radius-sm);
   font-size: 0.85rem;
   line-height: 1.4;
+  text-align: center;
 }
 
 .footer {
-  padding: 0 1.5rem 1.5rem;
+  padding: 0 1.5rem 1.25rem;
   text-align: center;
+  background-color: var(--bg-card);
 }
 
 .footerText {
   margin: 0;
   font-size: 0.75rem;
-  color: var(--color-gray-text);
+  color: var(--gray-text);
 }

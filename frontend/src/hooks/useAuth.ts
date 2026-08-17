@@ -4,10 +4,31 @@ import { useState, useEffect, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
+function getStoredSession(): { user: User | null; session: Session | null } {
+  if (typeof window === 'undefined') return { user: null, session: null };
+  try {
+    const keys = [
+      'sb-rchvwzvrnnulmfzwmozc-auth-token',
+      'supabase.auth.token',
+      'sb-auth-token',
+    ];
+    for (const key of keys) {
+      const item = localStorage.getItem(key);
+      if (item) {
+        const parsed = JSON.parse(item);
+        if (parsed?.user) {
+          return { user: parsed.user, session: parsed };
+        }
+      }
+    }
+  } catch (e) {}
+  return { user: null, session: null };
+}
+
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(() => getStoredSession().user);
+  const [session, setSession] = useState<Session | null>(() => getStoredSession().session);
+  const [loading, setLoading] = useState(!getStoredSession().user);
 
   useEffect(() => {
     if (!supabase) {
@@ -17,13 +38,15 @@ export function useAuth() {
 
     let isMounted = true;
 
-    // Get initial session
+    // Get initial session from Supabase client
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (isMounted) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
+    }).catch(() => {
+      if (isMounted) setLoading(false);
     });
 
     // Listen for auth state changes
@@ -41,7 +64,7 @@ export function useAuth() {
     };
   }, []);
 
-  const signInWithOAuth = useCallback(async (provider: 'google' | 'github') => {
+  const signInWithGitHub = useCallback(async () => {
     if (!supabase) {
       throw new Error('Supabase client is not configured');
     }
@@ -51,10 +74,9 @@ export function useAuth() {
       : undefined;
 
     const { error } = await supabase.auth.signInWithOAuth({
-      provider,
+      provider: 'github',
       options: {
         redirectTo,
-        queryParams: provider === 'google' ? { access_type: 'offline', prompt: 'consent' } : undefined,
       },
     });
 
@@ -62,9 +84,24 @@ export function useAuth() {
   }, []);
 
   const signOut = useCallback(async () => {
-    if (!supabase) return;
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      const keys = [
+        'sb-rchvwzvrnnulmfzwmozc-auth-token',
+        'supabase.auth.token',
+        'sb-auth-token',
+      ];
+      keys.forEach((k) => {
+        try {
+          localStorage.removeItem(k);
+        } catch (e) {}
+      });
+    } catch (e) {}
+
+    if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {}
+    }
     setUser(null);
     setSession(null);
   }, []);
@@ -74,7 +111,8 @@ export function useAuth() {
     session,
     loading,
     isAuthenticated: Boolean(user),
-    signInWithOAuth,
+    signInWithGitHub,
+    signInWithOAuth: signInWithGitHub,
     signOut,
   };
 }

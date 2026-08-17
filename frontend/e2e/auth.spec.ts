@@ -1,18 +1,29 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('OAuth Authentication Modal & Flow', () => {
+test.describe('Protected Board & GitHub OAuth Authentication', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
   });
 
-  test('renders Iniciar Sesión button in header', async ({ page }) => {
+  test('shows login hero and protects board when user is not authenticated', async ({ page }) => {
+    // Board columns should not be visible
+    await expect(page.locator('[data-testid="kanban-board-container"]')).not.toBeVisible();
+
+    // Login Hero should be prominently displayed
+    const hero = page.locator('[data-testid="login-hero-container"]');
+    await expect(hero).toBeVisible();
+    await expect(hero.locator('h2')).toContainText('Project Board');
+    await expect(hero.locator('#hero-github-login-btn')).toBeVisible();
+    await expect(hero.locator('#hero-github-login-btn')).toContainText('Continuar con GitHub');
+
+    // Header has Iniciar Sesión button
     const loginBtn = page.locator('#open-login-btn');
     await expect(loginBtn).toBeVisible();
     await expect(loginBtn).toContainText('Iniciar Sesión');
   });
 
-  test('opens AuthModal with Google and GitHub login options', async ({ page }) => {
+  test('opens AuthModal with only GitHub OAuth option (no Google)', async ({ page }) => {
     const loginBtn = page.locator('#open-login-btn');
     await loginBtn.click();
 
@@ -20,14 +31,13 @@ test.describe('OAuth Authentication Modal & Flow', () => {
     await expect(modal).toBeVisible();
     await expect(modal.locator('h2')).toContainText('Iniciar Sesión');
 
-    const googleBtn = page.locator('#google-signin-btn');
-    const githubBtn = page.locator('#github-signin-btn');
-
-    await expect(googleBtn).toBeVisible();
-    await expect(googleBtn).toContainText('Continuar con Google');
-
+    const githubBtn = modal.locator('#github-signin-btn');
     await expect(githubBtn).toBeVisible();
     await expect(githubBtn).toContainText('Continuar con GitHub');
+
+    // Google button must NOT exist
+    const googleBtn = modal.locator('#google-signin-btn');
+    await expect(googleBtn).toHaveCount(0);
   });
 
   test('closes AuthModal via close button and Escape key', async ({ page }) => {
@@ -37,7 +47,7 @@ test.describe('OAuth Authentication Modal & Flow', () => {
     const modal = page.locator('div[role="dialog"]');
     await expect(modal).toBeVisible();
 
-    // Close via close button
+    // Close via X button
     const closeBtn = modal.locator('button[aria-label="Cerrar modal"]');
     await closeBtn.click();
     await expect(modal).toBeHidden();

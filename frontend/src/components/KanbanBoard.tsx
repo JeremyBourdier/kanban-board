@@ -5,13 +5,16 @@ import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { useKanbanBoard } from '../hooks/useKanbanBoard';
 import { useTheme } from '../hooks/useTheme';
 import { useIsMounted } from '../hooks/useIsMounted';
+import { useAuth } from '../hooks/useAuth';
 import { Header } from './Header';
 import { KanbanColumn } from './KanbanColumn';
 import { AddCardModal } from './AddCardModal';
+import { LoginHero } from './LoginHero';
 import styles from './KanbanBoard.module.css';
 
 export const KanbanBoard: React.FC = () => {
   const isMounted = useIsMounted();
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
   const { board, addCard, deleteCard, renameColumn, moveCard } = useKanbanBoard();
   const { theme, toggleTheme } = useTheme();
 
@@ -52,7 +55,7 @@ export const KanbanBoard: React.FC = () => {
     setActiveModalCol(null);
   };
 
-  if (!isMounted) {
+  if (!isMounted || authLoading) {
     return (
       <div className={styles.boardLayout}>
         <Header
@@ -63,7 +66,7 @@ export const KanbanBoard: React.FC = () => {
         />
         <main className={styles.mainContent}>
           <div className={styles.boardContainer}>
-            {/* Render placeholder skeleton for server pass */}
+            {/* Loading Skeleton */}
           </div>
         </main>
       </div>
@@ -74,34 +77,40 @@ export const KanbanBoard: React.FC = () => {
     <div className={styles.boardLayout}>
       <Header
         columnCount={board.columns.length}
-        totalCards={totalCards}
+        totalCards={isAuthenticated ? totalCards : 0}
         theme={theme}
         onToggleTheme={toggleTheme}
       />
 
       <main className={styles.mainContent}>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className={styles.boardContainer} data-testid="kanban-board-container">
-            {board.columns.map((column) => (
-              <KanbanColumn
-                key={column.id}
-                column={column}
-                onRename={renameColumn}
-                onDeleteCard={deleteCard}
-                onOpenAddCardModal={handleOpenAddCardModal}
-              />
-            ))}
-          </div>
-        </DragDropContext>
+        {!isAuthenticated ? (
+          <LoginHero />
+        ) : (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className={styles.boardContainer} data-testid="kanban-board-container">
+              {board.columns.map((column) => (
+                <KanbanColumn
+                  key={column.id}
+                  column={column}
+                  onRename={renameColumn}
+                  onDeleteCard={deleteCard}
+                  onOpenAddCardModal={handleOpenAddCardModal}
+                />
+              ))}
+            </div>
+          </DragDropContext>
+        )}
       </main>
 
-      <AddCardModal
-        isOpen={!!activeModalCol}
-        columnId={activeModalCol?.id || ''}
-        columnTitle={activeModalCol?.title || ''}
-        onClose={handleCloseAddCardModal}
-        onSubmit={addCard}
-      />
+      {isAuthenticated && (
+        <AddCardModal
+          isOpen={!!activeModalCol}
+          columnId={activeModalCol?.id || ''}
+          columnTitle={activeModalCol?.title || ''}
+          onClose={handleCloseAddCardModal}
+          onSubmit={addCard}
+        />
+      )}
     </div>
   );
 };
