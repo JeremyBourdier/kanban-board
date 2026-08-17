@@ -1,9 +1,62 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { KanbanBoardState, KanbanCardItem } from '../types/kanban';
 import { initialBoardData } from '../data/initialData';
 
 export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData) {
   const [board, setBoard] = useState<KanbanBoardState>(initialData);
+  const isSyncingRef = useRef(false);
+
+  // Sync state to backend API
+  const persistBoard = useCallback(async (updatedBoard: KanbanBoardState) => {
+    try {
+      isSyncingRef.current = true;
+      await fetch('/api/board', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedBoard),
+      });
+    } catch (err) {
+      console.error('Failed to sync board:', err);
+    } finally {
+      setTimeout(() => {
+        isSyncingRef.current = false;
+      }, 500);
+    }
+  }, []);
+
+  // Poll for external changes (e.g. from AI Agent CLI or direct kanban.json edits)
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchLatestBoard = async () => {
+      if (isSyncingRef.current) return;
+      try {
+        const res = await fetch('/api/board', { cache: 'no-store' });
+        if (res.ok && isMounted) {
+          const data = await res.json();
+          if (data && Array.isArray(data.columns) && data.columns.length > 0) {
+            setBoard((current) => {
+              // Only update if serialized content is actually different to avoid UI re-render flickers
+              if (JSON.stringify(current) !== JSON.stringify(data)) {
+                return data;
+              }
+              return current;
+            });
+          }
+        }
+      } catch (err) {
+        // silent fallback to current state in offline/test environments
+      }
+    };
+
+    fetchLatestBoard();
+    const interval = setInterval(fetchLatestBoard, 1500);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const addCard = useCallback((columnId: string, title: string, details: string) => {
     const trimmedTitle = title.trim();
@@ -15,52 +68,64 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
       details: details.trim(),
     };
 
-    setBoard((prev) => ({
-      ...prev,
-      columns: prev.columns.map((col) => {
-        if (col.id === columnId) {
-          return {
-            ...col,
-            cards: [...col.cards, newCard],
-          };
-        }
-        return col;
-      }),
-    }));
-  }, []);
+    setBoard((prev) => {
+      const updated: KanbanBoardState = {
+        ...prev,
+        columns: prev.columns.map((col) => {
+          if (col.id === columnId) {
+            return {
+              ...col,
+              cards: [...col.cards, newCard],
+            };
+          }
+          return col;
+        }),
+      };
+      persistBoard(updated);
+      return updated;
+    });
+  }, [persistBoard]);
 
   const deleteCard = useCallback((columnId: string, cardId: string) => {
-    setBoard((prev) => ({
-      ...prev,
-      columns: prev.columns.map((col) => {
-        if (col.id === columnId) {
-          return {
-            ...col,
-            cards: col.cards.filter((card) => card.id !== cardId),
-          };
-        }
-        return col;
-      }),
-    }));
-  }, []);
+    setBoard((prev) => {
+      const updated: KanbanBoardState = {
+        ...prev,
+        columns: prev.columns.map((col) => {
+          if (col.id === columnId) {
+            return {
+              ...col,
+              cards: col.cards.filter((card) => card.id !== cardId),
+            };
+          }
+          return col;
+        }),
+      };
+      persistBoard(updated);
+      return updated;
+    });
+  }, [persistBoard]);
 
   const renameColumn = useCallback((columnId: string, newTitle: string) => {
     const trimmed = newTitle.trim();
     if (!trimmed) return;
 
-    setBoard((prev) => ({
-      ...prev,
-      columns: prev.columns.map((col) => {
-        if (col.id === columnId) {
-          return {
-            ...col,
-            title: trimmed,
-          };
-        }
-        return col;
-      }),
-    }));
-  }, []);
+    setBoard((prev) => {
+      const updated: KanbanBoardState = {
+        ...prev,
+        columns: prev.columns.map((col) => {
+          if (col.id === columnId) {
+            return {
+              ...col,
+              title: trimmed,
+            };
+          }
+          return col;
+        }),
+      };
+      persistBoard(updated);
+      return updated;
+    });
+  }, [persistBoard]);
 
   const moveCard = useCallback(
     (
@@ -91,10 +156,12 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
             cards: newCards,
           };
 
-          return {
+          const updated = {
             ...prev,
             columns: newColumns,
           };
+          persistBoard(updated);
+          return updated;
         }
 
         // Moving across different columns
@@ -115,13 +182,15 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
           cards: destCards,
         };
 
-        return {
+        const updated = {
           ...prev,
           columns: newColumns,
         };
+        persistBoard(updated);
+        return updated;
       });
     },
-    []
+    [persistBoard]
   );
 
   return {

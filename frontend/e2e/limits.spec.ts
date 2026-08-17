@@ -1,7 +1,18 @@
 import { test, expect } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
+import { initialBoardData } from '../src/data/initialData';
+
+function resetBoardFile() {
+  const rootPath = path.resolve(process.cwd(), '../kanban.json');
+  const localPath = path.resolve(process.cwd(), 'kanban.json');
+  const target = fs.existsSync(rootPath) ? rootPath : localPath;
+  fs.writeFileSync(target, JSON.stringify(initialBoardData, null, 2), 'utf-8');
+}
 
 test.describe('Kanban Limit & Boundary Tests', () => {
   test.beforeEach(async ({ page }) => {
+    resetBoardFile();
     await page.goto('/');
   });
 

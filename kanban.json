@@ -1,0 +1,74 @@
+{
+  "columns": [
+    {
+      "id": "col-1",
+      "title": "Backlog",
+      "cards": [
+        {
+          "id": "card-1",
+          "title": "Implement Dark Mode Toggle",
+          "details": "Add theme switcher support across all dashboard views and components."
+        },
+        {
+          "id": "card-2",
+          "title": "Audit Accessibility Compliance",
+          "details": "Run WCAG 2.1 AA audits on all interactive elements and form fields."
+        }
+      ]
+    },
+    {
+      "id": "col-2",
+      "title": "Ready",
+      "cards": [
+        {
+          "id": "card-3",
+          "title": "Refactor Column Drag Context",
+          "details": "Optimize drag handle responsiveness and drop zone indicators."
+        }
+      ]
+    },
+    {
+      "id": "col-3",
+      "title": "In Progress",
+      "cards": [
+        {
+          "id": "card-4",
+          "title": "Design Card Details Modal",
+          "details": "Create a clean, focused editing and creation experience."
+        },
+        {
+          "id": "card-5",
+          "title": "Optimize Rendering Performance",
+          "details": "Prevent unnecessary re-renders when updating individual card items."
+        }
+      ]
+    },
+    {
+      "id": "col-4",
+      "title": "In Review",
+      "cards": [
+        {
+          "id": "card-6",
+          "title": "Responsive Grid Layout",
+          "details": "Verify horizontal scrolling behavior across tablet and mobile viewports."
+        }
+      ]
+    },
+    {
+      "id": "col-5",
+      "title": "Done",
+      "cards": [
+        {
+          "id": "card-7",
+          "title": "Project Scaffolding",
+          "details": "Setup Next.js with TypeScript, CSS custom properties, and testing suite."
+        },
+        {
+          "id": "card-8",
+          "title": "Brand Palette Integration",
+          "details": "Configured navy, purple, blue, yellow, and neutral gray token system."
+        }
+      ]
+    }
+  ]
+}

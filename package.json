@@ -9,6 +9,7 @@
     "test": "npm run test --prefix frontend",
     "test:ui": "npm run test:ui --prefix frontend",
     "test:headed": "npm run test:headed --prefix frontend",
-    "test:report": "npm run test:report --prefix frontend"
+    "test:report": "npm run test:report --prefix frontend",
+    "kanban": "node scripts/kanban.js"
   }
 }
