@@ -86,11 +86,44 @@
 
 .footerRow {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   margin-top: 0.25rem;
-  padding-top: 0.35rem;
+  padding-top: 0.45rem;
   border-top: 1px dashed var(--gray-border);
+  gap: 0.5rem;
+}
+
+.moveControl {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.moveLabel {
+  font-size: 0.725rem;
+  color: var(--gray-text);
+  font-weight: 600;
+}
+
+.moveSelect {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--dark-navy);
+  background-color: var(--gray-light);
+  border: 1px solid var(--gray-border);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.45rem;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+  max-width: 140px;
+}
+
+.moveSelect:focus,
+.moveSelect:hover {
+  border-color: var(--blue-primary);
+  background-color: var(--bg-card);
 }
 
 .dragHandle {
@@ -100,8 +133,26 @@
   color: var(--gray-text);
   font-size: 0.725rem;
   cursor: grab;
+  padding: 0.25rem;
 }
 
 .dragHandle:active {
   cursor: grabbing;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 0.85rem 0.9rem;
+  }
+
+  .actionButton {
+    padding: 0.35rem;
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .moveSelect {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.78rem;
+  }
 }

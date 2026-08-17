@@ -18,7 +18,15 @@ import styles from './KanbanBoard.module.css';
 export const KanbanBoard: React.FC = () => {
   const isMounted = useIsMounted();
   const { user, loading: authLoading, isAuthenticated, isAuthorized } = useAuth();
-  const { board, addCard, deleteCard, updateCard, renameColumn, moveCard } = useKanbanBoard();
+  const {
+    board,
+    addCard,
+    deleteCard,
+    updateCard,
+    renameColumn,
+    moveCard,
+    moveCardToColumn,
+  } = useKanbanBoard();
   const { theme, toggleTheme } = useTheme();
 
   const [activeModalCol, setActiveModalCol] = useState<{
@@ -26,8 +34,17 @@ export const KanbanBoard: React.FC = () => {
     title: string;
   } | null>(null);
   const [activeEditCard, setActiveEditCard] = useState<KanbanCardItem | null>(null);
+  const [activeMobileColId, setActiveMobileColId] = useState<string>('col-1');
 
   const totalCards = board.columns.reduce((acc, col) => acc + col.cards.length, 0);
+
+  const scrollToColumn = (colId: string) => {
+    setActiveMobileColId(colId);
+    const element = document.getElementById(`column-${colId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  };
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source } = result;
@@ -67,6 +84,8 @@ export const KanbanBoard: React.FC = () => {
     setActiveEditCard(null);
   };
 
+  const allColumnsList = board.columns.map((c) => ({ id: c.id, title: c.title }));
+
   if (!isMounted || authLoading) {
     return (
       <div className={styles.boardLayout}>
@@ -100,20 +119,45 @@ export const KanbanBoard: React.FC = () => {
         ) : !isAuthorized ? (
           <AccessDeniedHero />
         ) : (
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <div className={styles.boardContainer} data-testid="kanban-board-container">
-              {board.columns.map((column) => (
-                <KanbanColumn
-                  key={column.id}
-                  column={column}
-                  onRename={renameColumn}
-                  onDeleteCard={deleteCard}
-                  onEditCard={handleOpenEditCardModal}
-                  onOpenAddCardModal={handleOpenAddCardModal}
-                />
+          <>
+            <nav
+              className={styles.mobileColumnNav}
+              aria-label="Navegación de columnas en móvil"
+              data-testid="mobile-column-nav"
+            >
+              {board.columns.map((col) => (
+                <button
+                  key={col.id}
+                  type="button"
+                  className={`${styles.mobileColPill} ${
+                    activeMobileColId === col.id ? styles.mobileColPillActive : ''
+                  }`}
+                  onClick={() => scrollToColumn(col.id)}
+                  data-testid={`mobile-col-pill-${col.id}`}
+                >
+                  <span>{col.title}</span>
+                  <span className={styles.pillBadge}>{col.cards.length}</span>
+                </button>
               ))}
-            </div>
-          </DragDropContext>
+            </nav>
+
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <div className={styles.boardContainer} data-testid="kanban-board-container">
+                {board.columns.map((column) => (
+                  <KanbanColumn
+                    key={column.id}
+                    column={column}
+                    allColumns={allColumnsList}
+                    onRename={renameColumn}
+                    onDeleteCard={deleteCard}
+                    onEditCard={handleOpenEditCardModal}
+                    onMoveCardToColumn={moveCardToColumn}
+                    onOpenAddCardModal={handleOpenAddCardModal}
+                  />
+                ))}
+              </div>
+            </DragDropContext>
+          </>
         )}
       </main>
 

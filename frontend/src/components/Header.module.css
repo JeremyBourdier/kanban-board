@@ -97,3 +97,49 @@
   color: var(--blue-primary);
   border-color: rgba(32, 157, 215, 0.3);
 }
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .title {
+    font-size: 1.15rem;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .rightSection {
+    gap: 0.6rem;
+  }
+
+  .stats {
+    gap: 0.4rem;
+  }
+
+  .statBadge {
+    padding: 0.25rem 0.55rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand {
+    gap: 0.5rem;
+  }
+
+  .logoIcon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .title {
+    font-size: 1.05rem;
+  }
+
+  .stats {
+    display: none;
+  }
+}

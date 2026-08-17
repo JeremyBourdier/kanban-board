@@ -146,3 +146,23 @@
   color: var(--purple-secondary);
   border-color: rgba(117, 57, 145, 0.3);
 }
+
+@media (max-width: 768px) {
+  .column {
+    min-width: calc(100vw - 2.5rem);
+    max-width: calc(100vw - 2.5rem);
+    width: calc(100vw - 2.5rem);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    flex-shrink: 0;
+  }
+
+  .columnHeader {
+    padding: 0.85rem 1rem;
+  }
+
+  .addCardButton {
+    padding: 0.75rem 1rem;
+    font-size: 0.925rem;
+  }
+}

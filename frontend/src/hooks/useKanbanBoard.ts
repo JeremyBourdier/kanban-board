@@ -249,6 +249,48 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
     [persistBoard]
   );
 
+  const moveCardToColumn = useCallback(
+    (cardId: string, targetColumnId: string) => {
+      setBoard((prev) => {
+        let foundCard: KanbanCardItem | null = null;
+        let sourceColumnId = '';
+
+        for (const col of prev.columns) {
+          const card = col.cards.find((c) => c.id === cardId);
+          if (card) {
+            foundCard = card;
+            sourceColumnId = col.id;
+            break;
+          }
+        }
+
+        if (!foundCard || sourceColumnId === targetColumnId) return prev;
+
+        const updated: KanbanBoardState = {
+          ...prev,
+          columns: prev.columns.map((col) => {
+            if (col.id === sourceColumnId) {
+              return {
+                ...col,
+                cards: col.cards.filter((c) => c.id !== cardId),
+              };
+            }
+            if (col.id === targetColumnId) {
+              return {
+                ...col,
+                cards: [...col.cards, foundCard!],
+              };
+            }
+            return col;
+          }),
+        };
+        persistBoard(updated);
+        return updated;
+      });
+    },
+    [persistBoard]
+  );
+
   return {
     board,
     addCard,
@@ -256,5 +298,6 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
     updateCard,
     renameColumn,
     moveCard,
+    moveCardToColumn,
   };
 }

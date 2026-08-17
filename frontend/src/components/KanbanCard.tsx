@@ -9,11 +9,22 @@ import styles from './KanbanCard.module.css';
 interface KanbanCardProps {
   card: KanbanCardItem;
   index: number;
+  columnId?: string;
+  columns?: { id: string; title: string }[];
   onDelete: (cardId: string) => void;
   onEdit?: (card: KanbanCardItem) => void;
+  onMoveToColumn?: (cardId: string, targetColumnId: string) => void;
 }
 
-export const KanbanCard: React.FC<KanbanCardProps> = ({ card, index, onDelete, onEdit }) => {
+export const KanbanCard: React.FC<KanbanCardProps> = ({
+  card,
+  index,
+  columnId,
+  columns,
+  onDelete,
+  onEdit,
+  onMoveToColumn,
+}) => {
   return (
     <Draggable draggableId={card.id} index={index}>
       {(provided, snapshot) => (
@@ -62,7 +73,29 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ card, index, onDelete, o
           {card.details && <p className={styles.cardDetails}>{card.details}</p>}
 
           <div className={styles.footerRow}>
-            <div className={styles.dragHandle} aria-hidden="true">
+            {onMoveToColumn && columns && columns.length > 1 && (
+              <div className={styles.moveControl} onClick={(e) => e.stopPropagation()}>
+                <span className={styles.moveLabel}>Mover:</span>
+                <select
+                  className={styles.moveSelect}
+                  value={columnId || ''}
+                  onChange={(e) => {
+                    if (e.target.value && e.target.value !== columnId) {
+                      onMoveToColumn(card.id, e.target.value);
+                    }
+                  }}
+                  aria-label={`Mover tarea ${card.title} a otra columna`}
+                  data-testid={`move-card-select-${card.id}`}
+                >
+                  {columns.map((col) => (
+                    <option key={col.id} value={col.id}>
+                      {col.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div className={styles.dragHandle} aria-hidden="true" title="Arrastrar tarjeta">
               <GripVertical size={13} />
             </div>
           </div>

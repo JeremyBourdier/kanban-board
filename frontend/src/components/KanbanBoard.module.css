@@ -14,6 +14,10 @@
   flex-direction: column;
 }
 
+.mobileColumnNav {
+  display: none;
+}
+
 .boardContainer {
   display: flex;
   gap: 1.25rem;
@@ -26,9 +30,72 @@
 
 @media (max-width: 768px) {
   .mainContent {
-    padding: 1rem;
+    padding: 0.75rem 0.75rem 1.25rem 0.75rem;
+    overflow-x: hidden;
   }
+
+  .mobileColumnNav {
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    padding: 0.25rem 0.25rem 0.65rem 0.25rem;
+    margin-bottom: 0.5rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobileColumnNav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobileColPill {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 9999px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--gray-border);
+    color: var(--dark-navy);
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  .mobileColPillActive {
+    background-color: var(--blue-primary);
+    color: #ffffff;
+    border-color: var(--blue-primary);
+    box-shadow: 0 2px 8px rgba(32, 157, 215, 0.3);
+  }
+
+  .mobileColPillActive .pillBadge {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+  }
+
+  .pillBadge {
+    background-color: var(--gray-light);
+    color: var(--gray-text);
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 9999px;
+    font-weight: 700;
+  }
+
   .boardContainer {
-    gap: 0.85rem;
+    display: flex;
+    flex-direction: row;
+    gap: 0.75rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 1rem;
+    width: 100%;
+    min-width: 100%;
+    scroll-padding: 0 0.5rem;
   }
 }

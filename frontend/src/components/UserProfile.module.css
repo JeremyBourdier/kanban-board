@@ -164,3 +164,19 @@
 .logoutBtn:hover {
   background-color: var(--danger-light);
 }
+
+@media (max-width: 480px) {
+  .userName {
+    display: none;
+  }
+
+  .userMenuBtn {
+    padding: 0.3rem 0.45rem;
+    gap: 0.35rem;
+  }
+
+  .loginBtn {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}

@@ -9,17 +9,21 @@ import styles from './KanbanColumn.module.css';
 
 interface KanbanColumnProps {
   column: KanbanColumnItem;
+  allColumns?: { id: string; title: string }[];
   onRename: (columnId: string, newTitle: string) => void;
   onDeleteCard: (columnId: string, cardId: string) => void;
   onEditCard: (card: KanbanCardItem) => void;
+  onMoveCardToColumn?: (cardId: string, targetColumnId: string) => void;
   onOpenAddCardModal: (columnId: string, columnTitle: string) => void;
 }
 
 export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   column,
+  allColumns,
   onRename,
   onDeleteCard,
   onEditCard,
+  onMoveCardToColumn,
   onOpenAddCardModal,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -56,6 +60,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
   return (
     <section
+      id={`column-${column.id}`}
       className={styles.column}
       data-testid={`kanban-column-${column.id}`}
       aria-label={`Column: ${column.title}`}
@@ -120,8 +125,11 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 key={card.id}
                 card={card}
                 index={index}
+                columnId={column.id}
+                columns={allColumns}
                 onDelete={(cardId) => onDeleteCard(column.id, cardId)}
                 onEdit={onEditCard}
+                onMoveToColumn={onMoveCardToColumn}
               />
             ))}
             {provided.placeholder}

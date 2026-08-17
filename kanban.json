@@ -42,6 +42,11 @@
           "id": "card-1786949162788-krty",
           "title": "Editar Tarjetas de Tareas",
           "details": "Permitir editar el titulo y los detalles de cualquier tarjeta existente desde un modal con guardado en tiempo real."
+        },
+        {
+          "id": "card-1786949728923-gm16e",
+          "title": "Movile first",
+          "details": "Refactoriza y prueba el diseño para que funcione muy bien en teléfonos móviles, ya que hay varios problemas de diseño en el móvil y es un poco difícil de usar en el teléfono móvil. Aplica los cambios que consideres necesarios para que sea agradable de usar en el móvil, tanto como en una computadora."
         }
       ],
       "title": "Done"
