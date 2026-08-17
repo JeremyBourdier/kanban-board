@@ -161,6 +161,17 @@
   align-items: flex-start;
 }
 
+.agentTag {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--blue-primary);
+  margin-bottom: 0.25rem;
+  padding-left: 0.35rem;
+}
+
 .bubble {
   padding: 0.7rem 0.95rem;
   border-radius: 1.1rem;

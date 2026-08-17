@@ -97,8 +97,8 @@ test.describe('Kanban AI Assistant Chat Suite', () => {
     await chip.click();
 
     // User message is populated and sent
-    await expect(page.getByTestId('chat-messages-list')).toContainText('¿Cuál es el resumen del tablero?');
-    await expect(page.getByTestId('chat-messages-list')).toContainText('Resumen Actual del Tablero Kanban');
+    const messagesList = page.getByTestId('chat-messages-list');
+    await expect(messagesList).toContainText('¿Cómo está estructurado el código?');
   });
 
   test('clears conversation history when clicking trash button', async ({ page }) => {
@@ -107,11 +107,13 @@ test.describe('Kanban AI Assistant Chat Suite', () => {
     const input = page.getByTestId('chat-input');
     await input.fill('Mensaje de prueba');
     await page.getByTestId('chat-send-btn').click();
-    await expect(page.getByText('Mensaje de prueba')).toBeVisible();
+
+    const userMsg = page.getByTestId('chat-message-user').getByText('Mensaje de prueba');
+    await expect(userMsg).toBeVisible();
 
     // Clear history
     await page.getByTestId('chat-clear-btn').click();
-    await expect(page.getByText('Mensaje de prueba')).not.toBeVisible();
-    await expect(page.getByText('¡Hola! Soy tu asistente de Kanban')).toBeVisible();
+    await expect(userMsg).not.toBeVisible();
+    await expect(page.getByTestId('chat-messages-list')).toContainText('Antigravity');
   });
 });

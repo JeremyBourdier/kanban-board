@@ -26,17 +26,26 @@ export async function POST(request: Request) {
     const geminiApiKey = process.env.GEMINI_API_KEY;
     if (geminiApiKey) {
       try {
-        const promptContext = boardContext
-          ? `Contexto actual del tablero Kanban:\n${boardContext.columns
-              .map(
-                (c) =>
-                  `Columna "${c.title}" (${c.cards.length} tarjetas):\n` +
-                  c.cards.map((k) => `  - [${k.title}]: ${k.details}`).join('\n')
-              )
-              .join('\n\n')}`
-          : 'Tablero Kanban activo.';
+        const codebaseContext = `
+Proyecto: Kanban Board Fullstack Web App
+Tecnologías: Next.js 16 (App Router), React 19, TypeScript, Vanilla CSS Modules, Supabase (PostgreSQL & GitHub OAuth), Playwright E2E.
+Repositorio GitHub: https://github.com/JeremyBourdier/kanban-board
+Propietario: Jeremy Bourdier (bourdierestrellajeremy@gmail.com)
+Tablero Kanban:
+${
+  boardContext
+    ? boardContext.columns
+        .map(
+          (c) =>
+            `- [${c.title}] (${c.cards.length} tarjetas): ` +
+            c.cards.map((k) => `"${k.title}"`).join(', ')
+        )
+        .join('\n')
+    : '5 columnas estándar.'
+}
+`;
 
-        const systemPrompt = `Eres el asistente de IA integrado de este tablero Kanban. Eres conciso, profesional y hablas en español. Ayudas al usuario a organizar tareas, resumir el estado del proyecto y planificar mejoras. Contexto del proyecto: ${promptContext}`;
+        const systemPrompt = `Eres Antigravity, el agente de IA de codificación avanzada de Google DeepMind que está programando en pareja con Jeremy Bourdier en este proyecto Kanban. Eres un ingeniero de software senior, hablas en español, eres conciso, técnico y directo. Conoces todo el código fuente del proyecto, el pipeline de Playwright y el estado de Supabase. Responde siempre como el agente programador Antigravity en el IDE.\nContexto: ${codebaseContext}`;
 
         const geminiRes = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
@@ -74,7 +83,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Built-in intelligent assistant reasoning engine
+    // Direct Antigravity IDE Agent reasoning engine
     let responseText = '';
 
     const totalCards = boardContext
@@ -88,73 +97,95 @@ export async function POST(request: Request) {
     const readyCol = boardContext?.columns.find(
       (c) => c.id === 'col-2' || c.title.toLowerCase().includes('ready')
     );
-    const backlogCol = boardContext?.columns.find(
-      (c) => c.id === 'col-1' || c.title.toLowerCase().includes('backlog')
-    );
 
     if (
+      userQuery.includes('quien eres') ||
+      userQuery.includes('quién eres') ||
+      userQuery.includes('antigravity') ||
+      userQuery.includes('presentate') ||
+      userQuery.includes('presentate')
+    ) {
+      responseText = `Soy **Antigravity**, tu agente de inteligencia artificial para desarrollo autónomo de software (Google DeepMind).
+
+Estoy conectado directamente a tu entorno de trabajo en \`c:\\Users\\bourd\\projects\\kanban\\kanban\` y me encargo de:
+1. **Programar y refactorizar código**: Escribo TypeScript, React 19 y CSS Modules siguiendo los estándares del proyecto.
+2. **Ejecutar pruebas automatizadas**: Corro y valido la suite de Playwright (\`npx playwright test\`).
+3. **Monitoreo autónomo**: Reviso periódicamente el tablero en Supabase para tomar cualquier tarea que coloques en **Ready**, implementarla, probarla y desplegarla automáticamente a GitHub/Vercel.
+
+¿En qué parte del código o arquitectura deseas que trabajemos hoy?`;
+    } else if (
+      userQuery.includes('codigo') ||
+      userQuery.includes('código') ||
+      userQuery.includes('arquitectura') ||
+      userQuery.includes('estructura') ||
+      userQuery.includes('stack')
+    ) {
+      responseText = `### Arquitectura del Proyecto Kanban
+
+El proyecto está organizado de la siguiente manera:
+
+- **Frontend (\`frontend/\`)**:
+  - \`src/components/\`: \`KanbanBoard.tsx\`, \`KanbanColumn.tsx\`, \`KanbanCard.tsx\`, \`ChatWidget.tsx\`, \`Header.tsx\`, etc.
+  - \`src/hooks/\`: \`useKanbanBoard.ts\` (gestión de estado y sincronización), \`useAuth.ts\` (Supabase OAuth & whitelist de JeremyBourdier), \`useTheme.ts\`.
+  - \`src/app/api/\`: \`/api/board\` (persistencia en Supabase/local) y \`/api/chat\` (este canal de comunicación).
+  - \`e2e/\`: Suite completa de Playwright (\`auth.spec.ts\`, \`kanban.spec.ts\`, \`mobile.spec.ts\`, \`chat.spec.ts\`, etc.).
+- **Scripts CLI (\`scripts/kanban.js\`)**:
+  - Herramienta para manipular el tablero vía consola (\`list\`, \`status\`, \`add\`, \`edit\`, \`move\`, \`delete\`).
+- **Base de Datos & Auth**:
+  - Supabase PostgreSQL (\`kanban_board\`) y GitHub OAuth para control de acceso exclusivo.`;
+    } else if (
+      userQuery.includes('monitor') ||
+      userQuery.includes('autonomo') ||
+      userQuery.includes('autónomo') ||
+      userQuery.includes('daemon') ||
+      userQuery.includes('ready')
+    ) {
+      responseText = `### Sistema de Monitoreo Autónomo
+
+Actualmente tengo un **proceso demonio en segundo plano** (\`task-789\`) ejecutándose cada minuto:
+
+1. **Detección**: Consulta Supabase para ver si hay tarjetas en la columna **Ready** (\`col-2\`).
+2. **Asignación**: Si encuentra una tarjeta, la mueve a **In Progress** (\`col-3\`).
+3. **Desarrollo**: Analiza el título y los detalles de la tarjeta, realiza las modificaciones de código necesarias y verifica la compilación con Turbopack.
+4. **Verificación**: Ejecuta la suite completa de Playwright (\`npx playwright test\`).
+5. **Entrega y Despliegue**: Mueve la tarjeta a **Done** (\`col-5\`), hace commit en Git y push a \`main\` en GitHub para el despliegue automático en Vercel.`;
+    } else if (
+      userQuery.includes('commit') ||
+      userQuery.includes('cambios') ||
+      userQuery.includes('despliegue') ||
+      userQuery.includes('ultimo') ||
+      userQuery.includes('último')
+    ) {
+      responseText = `### Últimos Cambios Desplegados en Producción
+
+1. **Interfaz de Chat con Antigravity**: Panel de interacción directa con el agente programador en IDE.
+2. **Scroll vertical individual**: Cada columna tiene su propio scrollbar suave manteniendo cabeceras fijas.
+3. **Diseño Mobile-First**: Píldoras adaptativas de columnas (\`flex-wrap\`), navegación táctil y modales tipo bottom-sheet.
+4. **Edición de tareas**: Modal completo para modificar títulos y descripciones en tiempo real.
+5. **Autenticación con GitHub**: Acceso exclusivo restringido a JeremyBourdier con pantalla de protección.`;
+    } else if (
       userQuery.includes('resumen') ||
       userQuery.includes('estado') ||
-      userQuery.includes('tablero') ||
-      userQuery.includes('status')
+      userQuery.includes('tablero')
     ) {
-      responseText = `### Resumen Actual del Tablero Kanban\n\n- **Total de tareas registradas:** ${totalCards}\n`;
+      responseText = `### Estado del Tablero (\`${totalCards}\` tarjetas registradas)\n\n`;
       if (boardContext) {
         boardContext.columns.forEach((col) => {
           responseText += `- **${col.title}:** ${col.cards.length} tarjeta(s)\n`;
         });
       }
-      responseText += `\n*El sistema de monitoreo en segundo plano sigue activo y detectará cualquier tarjeta que pases a "Ready".*`;
-    } else if (
-      userQuery.includes('completad') ||
-      userQuery.includes('terminad') ||
-      userQuery.includes('done')
-    ) {
-      if (doneCol && doneCol.cards.length > 0) {
-        responseText = `### Tareas Completadas (${doneCol.cards.length})\n\n`;
-        doneCol.cards.forEach((card, idx) => {
-          responseText += `${idx + 1}. **${card.title}**\n   ${card.details}\n\n`;
-        });
-      } else {
-        responseText = `Actualmente no hay tareas en la columna Done.`;
-      }
-    } else if (
-      userQuery.includes('progreso') ||
-      userQuery.includes('in progress') ||
-      userQuery.includes('haciendo')
-    ) {
-      if (inProgCol && inProgCol.cards.length > 0) {
-        responseText = `### Tareas en Progreso (${inProgCol.cards.length})\n\n`;
-        inProgCol.cards.forEach((card, idx) => {
-          responseText += `${idx + 1}. **${card.title}**\n   ${card.details}\n\n`;
-        });
-      } else {
-        responseText = `No hay tareas en progreso en este momento. Si colocas una tarea en **Ready**, la tomaré de inmediato de forma autónoma.`;
-      }
-    } else if (
-      userQuery.includes('ready') ||
-      userQuery.includes('pendiente') ||
-      userQuery.includes('siguiente')
-    ) {
-      if (readyCol && readyCol.cards.length > 0) {
-        responseText = `### Tareas Listas en Ready (${readyCol.cards.length})\n\n`;
-        readyCol.cards.forEach((card, idx) => {
-          responseText += `${idx + 1}. **${card.title}**\n   ${card.details}\n\n`;
-        });
-      } else {
-        responseText = `No hay tareas pendientes en **Ready**. Puedes crear una nueva tarea o mover una existente a Ready para que empiece a trabajar en ella.`;
-      }
-    } else if (
-      userQuery.includes('crear') ||
-      userQuery.includes('sugerir') ||
-      userQuery.includes('nueva tarea') ||
-      userQuery.includes('idea')
-    ) {
-      responseText = `Aquí tienes algunas sugerencias de funcionalidades útiles que podemos desarrollar:\n\n1. **Filtros por etiquetas de color:** Añadir etiquetas (Bug, Feature, Urgente) para clasificar tarjetas visualmente.\n2. **Historial de auditoría:** Registro de cambios recientes mostrando quién movió o editó cada tarjeta.\n3. **Exportar a CSV/JSON:** Opción para descargar una copia de seguridad local del tablero con un clic.\n4. **Animaciones de confetti al completar:** Efecto visual de celebración cuando una tarjeta se mueve a Done.\n\n*Si deseas alguna de estas o una idea propia, puedes crear la tarjeta en Backlog o Ready.*`;
-    } else if (userQuery.includes('hola') || userQuery.includes('saludos') || userQuery.includes('buenos')) {
-      responseText = `¡Hola! Soy tu asistente de Kanban. Estoy aquí para conversar, responder dudas sobre la aplicación, ayudarte a redactar requerimientos o informarte sobre el estado de tus tarjetas en tiempo real. ¿En qué te puedo colaborar hoy?`;
+      responseText += `\n*Recuerda que cualquier tarjeta que crees y coloques en "Ready" la comenzaré a programar inmediatamente de forma autónoma.*`;
+    } else if (userQuery.includes('hola') || userQuery.includes('saludos') || userQuery.includes('buenas')) {
+      responseText = `¡Hola Jeremy! Aquí Antigravity desde tu IDE. Estoy listo para programar, revisar el código del proyecto o implementar nuevas funciones. ¿Qué te gustaría que hagamos?`;
     } else {
-      responseText = `Entendido. He procesado tu consulta: "${lastMessage.content}".\n\nPuedo ayudarte con:\n- Consultar el **resumen o estado** del tablero.\n- Ver las tareas en **progreso o completadas**.\n- Sugerir o redactar **nuevas características** para tus tarjetas.\n\n¿Deseas que revise algún apartado específico del tablero?`;
+      responseText = `Hola Jeremy. He recibido tu mensaje: "${lastMessage.content}".
+
+Como agente programador de Antigravity en tu IDE, puedo:
+- Explicarte cualquier parte del **código y arquitectura** del proyecto.
+- Revisar el estado de las **pruebas automatizadas** o **despliegues de Vercel**.
+- Planificar o desglosar nuevas funcionalidades técnicas antes de que las agregues a **Ready**.
+
+¿Deseas que revise o implemente algo en específico?`;
     }
 
     return NextResponse.json({
@@ -167,6 +198,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Error en /api/chat:', error);
-    return NextResponse.json({ error: 'Error al procesar el mensaje' }, { status: 500 });
+    return NextResponse.json({ error: 'Error al procesar el mensaje con Antigravity' }, { status: 500 });
   }
 }

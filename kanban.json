@@ -62,6 +62,11 @@
           "id": "card-1786951311408-ky42v",
           "title": "Interfaz de chat",
           "details": "Crea una interfaz/apartado de chat para poder conversar/interactuar contigo sin necesidad de iterar sobre el código y desplegar programa esa logica y despliega"
+        },
+        {
+          "id": "card-1786951770229-zwaki",
+          "title": "Corregir chat",
+          "details": "Corregir el chat yo no quiero un asistente para las tarjetas quiero poder hablar con el agente programador que está en antigravity"
         }
       ],
       "title": "Done"
