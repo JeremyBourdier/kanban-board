@@ -6,9 +6,11 @@ import { useKanbanBoard } from '../hooks/useKanbanBoard';
 import { useTheme } from '../hooks/useTheme';
 import { useIsMounted } from '../hooks/useIsMounted';
 import { useAuth } from '../hooks/useAuth';
+import { KanbanCardItem } from '../types/kanban';
 import { Header } from './Header';
 import { KanbanColumn } from './KanbanColumn';
 import { AddCardModal } from './AddCardModal';
+import { EditCardModal } from './EditCardModal';
 import { LoginHero } from './LoginHero';
 import { AccessDeniedHero } from './AccessDeniedHero';
 import styles from './KanbanBoard.module.css';
@@ -16,13 +18,14 @@ import styles from './KanbanBoard.module.css';
 export const KanbanBoard: React.FC = () => {
   const isMounted = useIsMounted();
   const { user, loading: authLoading, isAuthenticated, isAuthorized } = useAuth();
-  const { board, addCard, deleteCard, renameColumn, moveCard } = useKanbanBoard();
+  const { board, addCard, deleteCard, updateCard, renameColumn, moveCard } = useKanbanBoard();
   const { theme, toggleTheme } = useTheme();
 
   const [activeModalCol, setActiveModalCol] = useState<{
     id: string;
     title: string;
   } | null>(null);
+  const [activeEditCard, setActiveEditCard] = useState<KanbanCardItem | null>(null);
 
   const totalCards = board.columns.reduce((acc, col) => acc + col.cards.length, 0);
 
@@ -54,6 +57,14 @@ export const KanbanBoard: React.FC = () => {
 
   const handleCloseAddCardModal = () => {
     setActiveModalCol(null);
+  };
+
+  const handleOpenEditCardModal = (card: KanbanCardItem) => {
+    setActiveEditCard(card);
+  };
+
+  const handleCloseEditCardModal = () => {
+    setActiveEditCard(null);
   };
 
   if (!isMounted || authLoading) {
@@ -97,6 +108,7 @@ export const KanbanBoard: React.FC = () => {
                   column={column}
                   onRename={renameColumn}
                   onDeleteCard={deleteCard}
+                  onEditCard={handleOpenEditCardModal}
                   onOpenAddCardModal={handleOpenAddCardModal}
                 />
               ))}
@@ -106,13 +118,21 @@ export const KanbanBoard: React.FC = () => {
       </main>
 
       {isAuthenticated && isAuthorized && (
-        <AddCardModal
-          isOpen={!!activeModalCol}
-          columnId={activeModalCol?.id || ''}
-          columnTitle={activeModalCol?.title || ''}
-          onClose={handleCloseAddCardModal}
-          onSubmit={addCard}
-        />
+        <>
+          <AddCardModal
+            isOpen={!!activeModalCol}
+            columnId={activeModalCol?.id || ''}
+            columnTitle={activeModalCol?.title || ''}
+            onClose={handleCloseAddCardModal}
+            onSubmit={addCard}
+          />
+          <EditCardModal
+            isOpen={!!activeEditCard}
+            card={activeEditCard}
+            onClose={handleCloseEditCardModal}
+            onSubmit={updateCard}
+          />
+        </>
       )}
     </div>
   );

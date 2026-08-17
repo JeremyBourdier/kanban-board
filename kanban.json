@@ -37,6 +37,11 @@
           "id": "card-1786948904197-hs0h",
           "title": "Control de Acceso y Lista Blanca de Propietario",
           "details": "Restringir acceso al tablero exclusivamente al propietario autorizado (JeremyBourdier), mostrando pantalla de Acceso Denegado a otros usuarios de GitHub."
+        },
+        {
+          "id": "card-1786949162788-krty",
+          "title": "Editar Tarjetas de Tareas",
+          "details": "Permitir editar el titulo y los detalles de cualquier tarjeta existente desde un modal con guardado en tiempo real."
         }
       ],
       "title": "Done"

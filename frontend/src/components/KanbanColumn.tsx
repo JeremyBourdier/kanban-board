@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import { Plus, Edit2 } from 'lucide-react';
-import { KanbanColumnItem } from '../types/kanban';
+import { KanbanColumnItem, KanbanCardItem } from '../types/kanban';
 import { KanbanCard } from './KanbanCard';
 import styles from './KanbanColumn.module.css';
 
@@ -11,6 +11,7 @@ interface KanbanColumnProps {
   column: KanbanColumnItem;
   onRename: (columnId: string, newTitle: string) => void;
   onDeleteCard: (columnId: string, cardId: string) => void;
+  onEditCard: (card: KanbanCardItem) => void;
   onOpenAddCardModal: (columnId: string, columnTitle: string) => void;
 }
 
@@ -18,6 +19,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   column,
   onRename,
   onDeleteCard,
+  onEditCard,
   onOpenAddCardModal,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -119,6 +121,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 card={card}
                 index={index}
                 onDelete={(cardId) => onDeleteCard(column.id, cardId)}
+                onEdit={onEditCard}
               />
             ))}
             {provided.placeholder}

@@ -208,6 +208,33 @@ async function main() {
       break;
     }
 
+    case 'edit': {
+      const cardId = flags.id || flags.card;
+      const title = flags.title || flags.t;
+      const details = flags.details || flags.d;
+      if (!cardId || (!title && details === undefined)) {
+        console.error('Usage: kanban edit --id <card_id> [--title <new_title>] [--details <new_details>]');
+        process.exit(1);
+      }
+
+      const match = findCard(board, cardId);
+      if (!match) {
+        console.error(`Card with ID "${cardId}" not found.`);
+        process.exit(1);
+      }
+
+      if (title !== undefined) {
+        match.card.title = String(title).trim();
+      }
+      if (details !== undefined) {
+        match.card.details = String(details).trim();
+      }
+
+      await saveBoard(board);
+      console.log(`Updated card [${cardId}] "${match.card.title}".`);
+      break;
+    }
+
     case 'delete': {
       const cardId = flags.id || flags.card;
       if (!cardId) {

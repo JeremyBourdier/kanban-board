@@ -136,6 +136,31 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
     });
   }, [persistBoard]);
 
+  const updateCard = useCallback((cardId: string, title: string, details: string) => {
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle) return;
+
+    setBoard((prev) => {
+      const updated: KanbanBoardState = {
+        ...prev,
+        columns: prev.columns.map((col) => {
+          const hasCard = col.cards.some((c) => c.id === cardId);
+          if (!hasCard) return col;
+          return {
+            ...col,
+            cards: col.cards.map((c) =>
+              c.id === cardId
+                ? { ...c, title: trimmedTitle, details: details.trim() }
+                : c
+            ),
+          };
+        }),
+      };
+      persistBoard(updated);
+      return updated;
+    });
+  }, [persistBoard]);
+
   const renameColumn = useCallback((columnId: string, newTitle: string) => {
     const trimmed = newTitle.trim();
     if (!trimmed) return;
@@ -228,6 +253,7 @@ export function useKanbanBoard(initialData: KanbanBoardState = initialBoardData)
     board,
     addCard,
     deleteCard,
+    updateCard,
     renameColumn,
     moveCard,
   };

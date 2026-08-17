@@ -177,6 +177,76 @@ test.describe('Kanban Board End-to-End Suite', () => {
       await expect(page.getByText('7 Tasks')).toBeVisible();
       await expect(page.getByTestId('column-count-col-1')).toHaveText('1');
     });
+
+    test('dismisses Edit Card modal using all close triggers without changing card data', async ({ page }) => {
+      const editBtn = page.getByTestId('edit-card-card-1');
+      const modal = page.getByTestId('edit-card-modal');
+
+      // 1. Close via X button
+      await editBtn.click();
+      await expect(modal).toBeVisible();
+      await page.getByTestId('edit-modal-close-button').click();
+      await expect(modal).not.toBeVisible();
+
+      // 2. Close via Cancel button
+      await editBtn.click();
+      await expect(modal).toBeVisible();
+      await page.getByTestId('cancel-edit-card-button').click();
+      await expect(modal).not.toBeVisible();
+
+      // 3. Close via Escape key
+      await editBtn.click();
+      await expect(modal).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(modal).not.toBeVisible();
+
+      // Original card still intact
+      await expect(page.getByRole('heading', { name: 'Implement Dark Mode Toggle' })).toBeVisible();
+    });
+
+    test('opens edit modal with prefilled data, modifies title and details, and saves changes', async ({ page }) => {
+      const editBtn = page.getByTestId('edit-card-card-1');
+      await editBtn.click();
+
+      const modal = page.getByTestId('edit-card-modal');
+      await expect(modal).toBeVisible();
+
+      const titleInput = page.getByTestId('edit-card-title-input');
+      const detailsInput = page.getByTestId('edit-card-details-input');
+      const submitBtn = page.getByTestId('submit-edit-card-button');
+
+      // Check prefilled values
+      await expect(titleInput).toHaveValue('Implement Dark Mode Toggle');
+      await expect(detailsInput).toHaveValue('Add theme switcher support across all dashboard views and components.');
+
+      // Update values
+      await titleInput.fill('Updated Dark Mode Toggle');
+      await detailsInput.fill('Refined high contrast colors and smooth transition.');
+      await submitBtn.click();
+
+      // Verify modal closed and updated card content is displayed
+      await expect(modal).not.toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Updated Dark Mode Toggle' })).toBeVisible();
+      await expect(page.getByText('Refined high contrast colors and smooth transition.')).toBeVisible();
+
+      // Total count remains 8 Tasks
+      await expect(page.getByText('8 Tasks')).toBeVisible();
+    });
+
+    test('edits card by double clicking card item', async ({ page }) => {
+      const card = page.getByTestId('kanban-card-card-2');
+      await card.dblclick();
+
+      const modal = page.getByTestId('edit-card-modal');
+      await expect(modal).toBeVisible();
+
+      const titleInput = page.getByTestId('edit-card-title-input');
+      await titleInput.fill('Double-Click Edited Card');
+      await page.getByTestId('submit-edit-card-button').click();
+
+      await expect(modal).not.toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Double-Click Edited Card' })).toBeVisible();
+    });
   });
 
   test.describe('Drag and Drop Movements', () => {
